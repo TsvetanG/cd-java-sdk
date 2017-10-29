@@ -3,6 +3,7 @@ package com.example.client;
 import static java.lang.String.format;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Set;
@@ -17,9 +18,18 @@ import org.hyperledger.fabric.sdk.SDKUtils;
 import org.hyperledger.fabric.sdk.TransactionRequest.Type;
 import org.hyperledger.fabric.sdk.User;
 
-public class DeployChaincode {
+public class InstallChaincode {
 
   public static void main(String[] args) {
+    
+    try {
+      System.out.println(">> " + new File(".").getCanonicalPath());
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    
+    
 
   }
 
@@ -102,7 +112,7 @@ public class DeployChaincode {
     public Set<Peer> getPeers() {
       return null;
     }
-
   }
+
 
 }
