@@ -16,21 +16,34 @@ import org.hyperledger.fabric.sdk.Peer;
 import org.hyperledger.fabric.sdk.ProposalResponse;
 import org.hyperledger.fabric.sdk.SDKUtils;
 import org.hyperledger.fabric.sdk.TransactionRequest.Type;
+import org.hyperledger.fabric.sdk.security.CryptoSuite;
+
+import com.example.client.impl.ChannelUtil;
+
 import org.hyperledger.fabric.sdk.User;
+import org.hyperledger.fabric.sdk.exception.CryptoException;
+import org.hyperledger.fabric.sdk.exception.InvalidArgumentException;
 
 public class InstallChaincode {
 
-  public static void main(String[] args) {
-    
-    try {
-      System.out.println(">> " + new File(".").getCanonicalPath());
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+  public static void main(String[] args) throws CryptoException, InvalidArgumentException {
+    if (args == null || args.length == 0) {
+      args = new String[] { "../cd-java-cc", "transfer" };
     }
-    
-    
+    String path = args[0];
+    String channelName = args[1]; 
+    InstallChaincode install = new InstallChaincode();
+    install.install(path, channelName);
 
+  }
+
+  public void install(String path, String channelName) throws CryptoException, InvalidArgumentException {
+    HFClient client = HFClient.createNewInstance();
+    client.setCryptoSuite(CryptoSuite.Factory.getCryptoSuite());
+    ChannelUtil util = new ChannelUtil();
+//    Channel channel = util.reconstructChannel(channelName, client, org)
+//    util.reconstructChannel(channelName, client, org)
+//    install(client, C);
   }
 
   public void install(HFClient client, Channel channel, Org sampleOrg) throws Exception {
@@ -113,6 +126,5 @@ public class InstallChaincode {
       return null;
     }
   }
-
 
 }

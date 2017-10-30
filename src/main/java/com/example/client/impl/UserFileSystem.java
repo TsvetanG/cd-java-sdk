@@ -16,7 +16,6 @@ public class UserFileSystem implements User  {
   
   public UserFileSystem(String name, String org ) throws UnsupportedEncodingException, FileNotFoundException, IOException {
      //Load the pk files and certificate to set the enrollment
-    
     this.enrollment = new EnrollmentFileSystem(getCertFile(name, org ) , getPkFile(name, org));
     
     this.org = org;

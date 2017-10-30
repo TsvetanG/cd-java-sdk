@@ -1,0 +1,3 @@
+peer.pharma.0=peer0.pharma.drug.com:grpc://localhost:9051
+peer.druginc.0=peer0.druginc.drug.com:grpc://localhost:7051
+orderer.0=phorderer.drug.com:grpc://localhost:7050
