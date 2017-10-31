@@ -13,11 +13,12 @@ public class UserFileSystem implements User  {
   private Enrollment enrollment;
   private String org;
   private String name;
+  private String mspId;
   
   public UserFileSystem(String name, String org ) throws UnsupportedEncodingException, FileNotFoundException, IOException {
      //Load the pk files and certificate to set the enrollment
     this.enrollment = new EnrollmentFileSystem(getCertFile(name, org ) , getPkFile(name, org));
-    
+    this.mspId = org.substring(0, org.indexOf("."));
     this.org = org;
     this.name = name;
     
@@ -30,12 +31,12 @@ public class UserFileSystem implements User  {
   }
 
   private String getPathToMSP(String uName, String org) {
-    return "/crypto-config/peerOrganizations/" + org + "/users/" + uName + "@" + org + "msp";
+    return "/store/crypto-config/peerOrganizations/" + org + "/users/" + uName + "@" + org + "/msp";
 
   }
 
   protected String getCertFile(String uName, String org) throws IOException {
-    File folder = new File("." + getPathToMSP(uName, org) , "signcerts");
+    File folder = new File(new File("." + getPathToMSP(uName, org)) , "signcerts");
     File[] files = folder.listFiles();
     return files[0].getCanonicalPath();
   }
@@ -57,7 +58,7 @@ public class UserFileSystem implements User  {
 
   @Override
   public String getMspId() { 
-    return org;
+    return mspId;
   }
 
   @Override

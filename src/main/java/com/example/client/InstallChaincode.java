@@ -3,7 +3,7 @@ package com.example.client;
 import static java.lang.String.format;
 
 import java.io.File;
-import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Set;
@@ -16,17 +16,16 @@ import org.hyperledger.fabric.sdk.Peer;
 import org.hyperledger.fabric.sdk.ProposalResponse;
 import org.hyperledger.fabric.sdk.SDKUtils;
 import org.hyperledger.fabric.sdk.TransactionRequest.Type;
+import org.hyperledger.fabric.sdk.User;
+import org.hyperledger.fabric.sdk.exception.CryptoException;
+import org.hyperledger.fabric.sdk.exception.InvalidArgumentException;
 import org.hyperledger.fabric.sdk.security.CryptoSuite;
 
 import com.example.client.impl.ChannelUtil;
 
-import org.hyperledger.fabric.sdk.User;
-import org.hyperledger.fabric.sdk.exception.CryptoException;
-import org.hyperledger.fabric.sdk.exception.InvalidArgumentException;
-
 public class InstallChaincode {
 
-  public static void main(String[] args) throws CryptoException, InvalidArgumentException {
+  public static void main(String[] args) throws CryptoException, InvalidArgumentException, IllegalAccessException, InstantiationException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException {
     if (args == null || args.length == 0) {
       args = new String[] { "../cd-java-cc", "transfer" };
     }
@@ -37,7 +36,7 @@ public class InstallChaincode {
 
   }
 
-  public void install(String path, String channelName) throws CryptoException, InvalidArgumentException {
+  public void install(String path, String channelName) throws CryptoException, InvalidArgumentException, IllegalAccessException, InstantiationException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException {
     HFClient client = HFClient.createNewInstance();
     client.setCryptoSuite(CryptoSuite.Factory.getCryptoSuite());
     ChannelUtil util = new ChannelUtil();

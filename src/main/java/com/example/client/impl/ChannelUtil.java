@@ -55,6 +55,9 @@ public class ChannelUtil {
     for (EventHub hub : hubs) {
       channel.addEventHub(hub);
     } 
+    for (Peer peer : peers) {
+      channel.addPeer(peer);
+    }
     channel.initialize();
 
     return channel;
@@ -64,7 +67,8 @@ public class ChannelUtil {
   public Channel reconstructChannel(String channelName, HFClient client)
       throws IOException, InvalidArgumentException, TransactionException {
     Properties props = new Properties();
-    FileInputStream fis = new FileInputStream(new File("./store/channels/" + channelName + ".prop"));
+    FileInputStream fis = new FileInputStream(new File("./store/channels/" +channelName + "/" + channelName + ".prop"));
+    
     props.load(fis);
     fis.close();
 
@@ -98,20 +102,57 @@ public class ChannelUtil {
 
     return reconstructChannel(channelName, client, peers, orderers, hubs);
   }
+  
+  protected Properties getOrdererProps(String name) {
+    return getProps("orderer", name);
+  }
+  
+  
+  protected Properties getPeerProps(String name) {
+    return getProps("peer", name);
+  }
+  
+  protected Properties getProps(String type, String name) {
+    String orgName = getOrgName(name);
+    File cert = null;
+    if ("peer".equals(type)) {
+      cert = new File("./store/crypto-config/peerOrganizations/" + orgName + "/peers/" + name + "/tls/server.crt");
+    } else {
+      cert = new File("./store/crypto-config/ordererOrganizations/" + orgName + "/orderers/" + name + "/tls/server.crt");
+    }
+   
+    if (!cert.exists()) {
+        throw new RuntimeException("Missing certificate file ");
+    }
+
+    Properties props = new Properties();
+    props.setProperty("pemFile", cert.getAbsolutePath());
+    //      ret.setProperty("trustServerCertificate", "true"); //testing environment only NOT FOR PRODUCTION!
+    props.setProperty("hostnameOverride", name);
+    props.setProperty("sslProvider", "openSSL");
+    props.setProperty("negotiationType", "TLS");
+
+    return props;
+  }
+
+  private String getOrgName(String name) {
+    int index = name.indexOf(".");
+    return name.substring(index + 1);
+  }
 
   protected EventHub createHub(HFClient client, String value) throws InvalidArgumentException {
     String[] split = split(value);
-    return client.newEventHub(split[0], split[1]);
+    return client.newEventHub(split[0], split[1], getPeerProps(split[0]));
   }
 
   protected Peer createPeer(HFClient client, String value) throws InvalidArgumentException {
     String[] split = split(value);
-    return client.newPeer(split[0], split[1]);
+    return client.newPeer(split[0], split[1],getPeerProps(split[0]));
   }
 
   protected Orderer createOrderer(HFClient client, String value) throws InvalidArgumentException {
     String[] split = split(value);
-    return client.newOrderer(split[0], split[1]);
+    return client.newOrderer(split[0], split[1],getOrdererProps(split[0]));
   }
 
   protected String[] split(String str) {
