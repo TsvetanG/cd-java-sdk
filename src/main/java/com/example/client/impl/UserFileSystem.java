@@ -11,7 +11,6 @@ import org.hyperledger.fabric.sdk.User;
 public class UserFileSystem implements User  {
 
   private Enrollment enrollment;
-  private String org;
   private String name;
   private String mspId;
   
@@ -19,7 +18,6 @@ public class UserFileSystem implements User  {
      //Load the pk files and certificate to set the enrollment
     this.enrollment = new EnrollmentFileSystem(getCertFile(name, org ) , getPkFile(name, org));
     this.mspId = org.substring(0, org.indexOf("."));
-    this.org = org;
     this.name = name;
     
   }
