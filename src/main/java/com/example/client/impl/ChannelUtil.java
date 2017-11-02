@@ -16,6 +16,7 @@ package com.example.client.impl;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -186,8 +187,33 @@ public class ChannelUtil {
     if (orderer == null) {
       throw new RuntimeException("Orderer not found in channel create property file");
     }
+    
+    storeNewChannel(channelName, ordererPath , org);
 
-    return createNewChannel(pathToConfigTX, channelName, client, orderer, client.getUserContext());
+    Channel channel = createNewChannel(pathToConfigTX, channelName, client, orderer, client.getUserContext());
+    return channel;
+  }
+
+  protected void storeNewChannel(String channelName, String ordererPath, String org) throws IOException {
+    File file = new File("./store/channels/" + channelName);
+    if (!file.exists()) {
+      file.mkdirs();
+    }
+    
+    File propFile = new File(file, channelName + ".prop");
+    Properties props = new Properties();
+    if(propFile.exists()) {
+      FileInputStream fis = new FileInputStream(propFile);
+      props.load(fis);
+      fis.close();
+    }
+    
+    props.setProperty("orderer." + org + ".0", ordererPath);
+    
+    FileOutputStream out = new FileOutputStream(propFile);
+    props.store(out, null);
+    out.close();
+    
   }
 
   protected Channel createNewChannel(String pathToConfigTX, String channelName, HFClient client, Orderer orderer,
