@@ -1,3 +1,17 @@
+/**
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *  
+ *  DO NOT USE IN PROJECTS , NOT for use in production
+ */
+
 package com.example.client.impl;
 
 import java.io.File;
@@ -163,38 +177,11 @@ public class ChannelUtil {
     return new String[] { str.substring(0, index), str.substring(index + 1) };
   }
 
-  public Channel createNewChannel(String pathToConfigTX, String channelName, String org, HFClient client)
+  public Channel createNewChannel(String ordererPath, String pathToConfigTX, String channelName, String org, HFClient client)
       throws IOException, InvalidArgumentException, TransactionException {
 
-    Properties props = new Properties();
-    FileInputStream fis = new FileInputStream(new File("./store/channels/" + channelName + "/" + channelName + ".prop"));
-
-    props.load(fis);
-    fis.close();
-    String key;
-    String value;
-    String[] keySplit;
-    Orderer orderer = null;
-    // get the orderer
-    Set<Entry<Object, Object>> set = props.entrySet();
-
-    for (Entry<Object, Object> entry : set) {
-      key = entry.getKey().toString();
-      keySplit = key.split("\\.");
-      if (!org.equals(keySplit[1])) {
-        continue;
-      }
-      value = entry.getValue().toString();
-      switch (keySplit[0]) {
-
-      case "orderer":
-        orderer = createOrderer(client, value);
-        break;
-
-      default:
-        break;
-      }
-    }
+    
+    Orderer orderer = createOrderer(client, ordererPath);
 
     if (orderer == null) {
       throw new RuntimeException("Orderer not found in channel create property file");
