@@ -52,7 +52,7 @@ public class InvokeChaincode {
       throws CryptoException, InvalidArgumentException, TransactionException, IOException, ProposalException,
       InterruptedException, ExecutionException, TimeoutException, IllegalAccessException, InstantiationException,
       ClassNotFoundException, NoSuchMethodException, InvocationTargetException {
-    String channelName = "transfer";
+    String channelName = "drug";
     String[] params = new String[] { "Alice", "Bob", "20" };
     if (args != null && args.length != 0) {
       params = args;

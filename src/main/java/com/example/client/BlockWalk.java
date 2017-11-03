@@ -5,10 +5,12 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 
+import org.hyperledger.fabric.protos.ledger.rwset.kvrwset.KvRwset;
 import org.hyperledger.fabric.sdk.BlockInfo;
 import org.hyperledger.fabric.sdk.BlockchainInfo;
 import org.hyperledger.fabric.sdk.Channel;
 import org.hyperledger.fabric.sdk.HFClient;
+import org.hyperledger.fabric.sdk.TxReadWriteSetInfo;
 import org.hyperledger.fabric.sdk.User;
 import org.hyperledger.fabric.sdk.exception.CryptoException;
 import org.hyperledger.fabric.sdk.exception.InvalidArgumentException;
@@ -34,6 +36,7 @@ public class BlockWalk {
   protected void walk(String channelName, String org, User user) throws CryptoException, InvalidArgumentException,
       IllegalAccessException, InstantiationException, ClassNotFoundException, NoSuchMethodException,
       InvocationTargetException, TransactionException, IOException, ProposalException {
+    
     ChannelUtil util = new ChannelUtil();
     HFClient client = HFClient.createNewInstance();
     client.setCryptoSuite(CryptoSuite.Factory.getCryptoSuite());
@@ -54,9 +57,38 @@ public class BlockWalk {
           for (BlockInfo.TransactionEnvelopeInfo.TransactionActionInfo trActionInfo : transactionEnvelopeInfo
               .getTransactionActionInfos()) {
             for (int counter = 0; counter < trActionInfo.getChaincodeInputArgsCount(); ++counter) {
-              System.out.println("Transaction info >>" + new String(trActionInfo.getChaincodeInputArgs(counter), "UTF-8"));
+              System.out
+                  .println("Transaction info >>" + new String(trActionInfo.getChaincodeInputArgs(counter), "UTF-8"));
 
             }
+
+            TxReadWriteSetInfo readWriteSet = trActionInfo.getTxReadWriteSet();
+            if (readWriteSet != null) {
+              for (TxReadWriteSetInfo.NsRwsetInfo nsRwsetInfo : readWriteSet.getNsRwsetInfos()) {
+                String namespace = nsRwsetInfo.getNamespace();
+                KvRwset.KVRWSet rws = nsRwsetInfo.getRwset();
+
+                System.out.println("Read Set");
+                for (KvRwset.KVRead readList : rws.getReadsList()) {
+                  System.out.println("Read Set Key: " + readList.getKey() + "version[] : "
+                      + readList.getVersion().getBlockNum() + ":" + readList.getVersion().getTxNum());
+
+                }
+                System.out.println("Read Set END");
+                System.out.println("Write Set");
+                for (KvRwset.KVWrite writeList : rws.getWritesList()) {
+
+                  String valAsString = new String(writeList.getValue().toByteArray(), "UTF-8");
+
+                  System.out.println("Key: Value " + writeList.getKey() + ":" + valAsString );
+
+                }
+                System.out.println("Write Set END");
+              }
+
+            }
+
+            System.out.println("ProposalResponse: " + new String(trActionInfo.getProposalResponsePayload()));
           }
         }
       }

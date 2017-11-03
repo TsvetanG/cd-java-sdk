@@ -45,7 +45,7 @@ public class InstallChaincode {
   public static void main(String[] args) throws CryptoException, InvalidArgumentException, IllegalAccessException, InstantiationException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, TransactionException, IOException, ProposalException, ChaincodeEndorsementPolicyParseException {
 
     String path = "../cd-java-cc";
-    String channelName = "transfer";
+    String channelName = "drug";
     int version = 12; 
     String chaincodeName = "javacc";
     String peerName = "peer0.druginc.drug.com";

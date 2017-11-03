@@ -50,18 +50,19 @@ public class InstantiateChaincode {
       TransactionException, IOException, ProposalException, ChaincodeEndorsementPolicyParseException {
 
     String chaincodeName = "javacc";
-    String channelName = "transfer";
+    String channelName = "drug";
     int version = 12;
     String org = "druginc";
+    boolean isUpgrade = false;
     InstantiateChaincode instantiate = new InstantiateChaincode();
     User user = new UserFileSystem("Admin", "druginc.drug.com");
     String[] params = new String[] { "Alice", "500", "Bob", "500" };
-    instantiate.instantiate(chaincodeName, channelName, org, version, user, params);
+    instantiate.instantiate(chaincodeName, channelName, org, version, user, params, isUpgrade);
 
   }
 
   protected void instantiate(String chaincodeName, String channelName, String org, int version, User user,
-      String[] params) throws InvalidArgumentException, TransactionException, IOException, CryptoException,
+      String[] params, boolean isUpgrade) throws InvalidArgumentException, TransactionException, IOException, CryptoException,
       IllegalAccessException, InstantiationException, ClassNotFoundException, NoSuchMethodException,
       InvocationTargetException, ChaincodeEndorsementPolicyParseException, ProposalException {
     HFClient client = HFClient.createNewInstance();
@@ -76,7 +77,7 @@ public class InstantiateChaincode {
     Collection<ProposalResponse> failed = new LinkedList<>();
 
     chaincodeID = ChaincodeID.newBuilder().setName(chaincodeName).setVersion(String.valueOf(version)).build();
-    if (version > 1) {
+    if (isUpgrade) {
       UpgradeProposalRequest upgrade = client.newUpgradeProposalRequest();
       upgrade.setChaincodeID(chaincodeID);
       upgrade.setProposalWaitTime(60000);
