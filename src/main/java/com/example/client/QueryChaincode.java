@@ -39,9 +39,9 @@ import org.hyperledger.fabric.sdk.security.CryptoSuite;
 
 import com.example.client.impl.ChannelUtil;
 import com.example.client.impl.UserFileSystem;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
 
 @RestController
 public class QueryChaincode {
@@ -60,14 +60,16 @@ public class QueryChaincode {
   }
 
   @RequestMapping(value = "/chaincode/query", method = RequestMethod.GET)
-  public QueryResult executeQuery() throws CryptoException, InvalidArgumentException, TransactionException, IOException, ProposalException,
+  public QueryResult executeQuery(@RequestParam(value = "accountHolder") String accountHolder)
+          throws CryptoException, InvalidArgumentException, TransactionException, IOException, ProposalException,
           InterruptedException, ExecutionException, TimeoutException, IllegalAccessException, InstantiationException,
           ClassNotFoundException, NoSuchMethodException, InvocationTargetException
   {
       String channelName = "drugchan";
       String chainCode = "bbb";
       String peerName = "peer0.druginc.drug.com";
-      String[] params = new String[] { "Bob" };
+      String[] params = new String[] { accountHolder };
+      System.out.println(accountHolder);
       User user = new UserFileSystem("Admin", "druginc.drug.com");
       QueryResult queryResult = new QueryResult();
       
@@ -114,4 +116,8 @@ public class QueryChaincode {
     return "";
   }
 
+    @ModelAttribute
+    public void setVaryResponseHeader(HttpServletResponse response) {
+        response.setHeader("Access-Control-Allow-Origin", "*");
+    }
 }
