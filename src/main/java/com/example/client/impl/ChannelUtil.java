@@ -170,11 +170,11 @@ public class ChannelUtil {
     props.setProperty("hostnameOverride", name);
     props.setProperty("sslProvider", "openSSL");
     props.setProperty("negotiationType", "TLS");
-    if("orderer".equals(type)) {
+//    if("orderer".equals(type)) {
       props.put("grpc.NettyChannelBuilderOption.keepAliveTime", new Object[] {5L, TimeUnit.MINUTES});
       props.put("grpc.NettyChannelBuilderOption.keepAliveTimeout", new Object[] {8L, TimeUnit.SECONDS});
       props.put("grpc.NettyChannelBuilderOption.keepAliveWithoutCalls", new Object[] {true});
-    }
+//    }
 
     return props;
   }
