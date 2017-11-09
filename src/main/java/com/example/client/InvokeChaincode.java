@@ -55,14 +55,14 @@ public class InvokeChaincode {
       throws CryptoException, InvalidArgumentException, TransactionException, IOException, ProposalException,
       InterruptedException, ExecutionException, TimeoutException, IllegalAccessException, InstantiationException,
       ClassNotFoundException, NoSuchMethodException, InvocationTargetException {
-    String channelName = "drug";
+    String channelName = "drugchan";
     String[] params = new String[] { "Alice", "Bob", "20" };
     if (args != null && args.length != 0) {
       params = args;
       sleepTime = Integer.parseInt(args[0]);
       sleepTime = sleepTime*1000;
     }
-    String chainCode = "javacc";
+    String chainCode = "bbb";
     String org = "druginc";
     String ops = "transfer";
     User user = new UserFileSystem("Admin", "druginc.drug.com");

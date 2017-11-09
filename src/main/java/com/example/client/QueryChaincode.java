@@ -62,17 +62,19 @@ public class QueryChaincode {
           InterruptedException, ExecutionException, TimeoutException, IllegalAccessException, InstantiationException,
           ClassNotFoundException, NoSuchMethodException, InvocationTargetException
   {
-      String channelName = "transfer";
-      String chainCode = "javacc";
+      String channelName = "drugchan";
+      String chainCode = "bbb";
       String[] params = new String[] { "Bob" };
-      //User user = new UserFileSystem("Admin", "druginc.drug.com");
+      User user = new UserFileSystem("Admin", "druginc.drug.com");
       QueryResult queryResult = new QueryResult();
-      //query(params, "druginc", channelName, chainCode, user);
+      
+      String result = query(params, "druginc", channelName, chainCode, user);
+      queryResult.setResponse(result);
       System.out.println("executed query: result is " + queryResult.getResponse());
       return queryResult;
-  }
+  } 
 
-  public void query(String[] params, String org, String channelName, String chainCode, User user)
+  public String query(String[] params, String org, String channelName, String chainCode, User user)
   throws CryptoException, InvalidArgumentException, TransactionException, IOException, InterruptedException,
   ExecutionException, TimeoutException, ProposalException, IllegalAccessException, InstantiationException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException {
 
@@ -102,8 +104,11 @@ public class QueryChaincode {
       } else {
         String payload = proposalResponse.getProposalResponse().getResponse().getPayload().toStringUtf8();
         System.out.println("Result > " + payload);
+        return payload;
+        
       }
     }
+    return "";
   }
 
 }
