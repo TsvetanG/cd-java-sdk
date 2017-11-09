@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
+import com.example.client.dto.QueryResult;
 import org.hyperledger.fabric.sdk.ChaincodeID;
 import org.hyperledger.fabric.sdk.Channel;
 import org.hyperledger.fabric.sdk.HFClient;
@@ -38,7 +39,11 @@ import org.hyperledger.fabric.sdk.security.CryptoSuite;
 
 import com.example.client.impl.ChannelUtil;
 import com.example.client.impl.UserFileSystem;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
+@RestController
 public class QueryChaincode {
 
   public static void main(String[] args) throws CryptoException, InvalidArgumentException, TransactionException,
@@ -52,9 +57,24 @@ public class QueryChaincode {
 
   }
 
+  @RequestMapping(value = "/chaincode/query", method = RequestMethod.GET)
+  public QueryResult executeQuery() throws CryptoException, InvalidArgumentException, TransactionException, IOException, ProposalException,
+          InterruptedException, ExecutionException, TimeoutException, IllegalAccessException, InstantiationException,
+          ClassNotFoundException, NoSuchMethodException, InvocationTargetException
+  {
+      String channelName = "transfer";
+      String chainCode = "javacc";
+      String[] params = new String[] { "Bob" };
+      //User user = new UserFileSystem("Admin", "druginc.drug.com");
+      QueryResult queryResult = new QueryResult();
+      //query(params, "druginc", channelName, chainCode, user);
+      System.out.println("executed query: result is " + queryResult.getResponse());
+      return queryResult;
+  }
+
   public void query(String[] params, String org, String channelName, String chainCode, User user)
-      throws CryptoException, InvalidArgumentException, TransactionException, IOException, InterruptedException,
-      ExecutionException, TimeoutException, ProposalException, IllegalAccessException, InstantiationException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException {
+  throws CryptoException, InvalidArgumentException, TransactionException, IOException, InterruptedException,
+  ExecutionException, TimeoutException, ProposalException, IllegalAccessException, InstantiationException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException {
 
     ChannelUtil util = new ChannelUtil();
     HFClient client = HFClient.createNewInstance();

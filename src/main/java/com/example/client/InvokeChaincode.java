@@ -27,6 +27,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import com.example.client.dto.ChaincodeFunctionParameters;
 import org.hyperledger.fabric.sdk.BlockEvent.TransactionEvent;
 import org.hyperledger.fabric.sdk.ChaincodeID;
 import org.hyperledger.fabric.sdk.Channel;
@@ -43,7 +44,9 @@ import org.hyperledger.fabric.sdk.security.CryptoSuite;
 
 import com.example.client.impl.ChannelUtil;
 import com.example.client.impl.UserFileSystem;
+import org.springframework.web.bind.annotation.*;
 
+@RestController
 public class InvokeChaincode {
 
   private static int sleepTime;
@@ -68,6 +71,28 @@ public class InvokeChaincode {
       // event.getTransactionID().
     }
     System.out.println("DONE ->>>>>>>>>>>>>>>");
+  }
+
+  @RequestMapping(value = "/chaincode/invoke", method = RequestMethod.POST)
+  public String invokeMethod(@RequestBody ChaincodeFunctionParameters chaincodeFunctionParameters)
+          throws CryptoException, InvalidArgumentException, TransactionException, IOException,
+          InterruptedException, ExecutionException, TimeoutException, ProposalException, IllegalAccessException,
+          InstantiationException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException
+  {
+
+      String ops = "transfer";
+      String org = "druginc";
+      String channelName = "drug";
+      String chainCode = "javacc";
+      User user = new UserFileSystem("Admin", "druginc.drug.com");
+
+      TransactionEvent event = new InvokeChaincode().invoke(ops, chaincodeFunctionParameters.getParameters(), org, channelName,
+              chainCode, user);
+      if (event != null) {
+          // event.getTransactionID().
+      }
+
+      return "DONE ->>>>>>>>>>>>>>>";
   }
 
   public TransactionEvent invoke(String operation, String[] params, String org, String channelName, String chainCode,
