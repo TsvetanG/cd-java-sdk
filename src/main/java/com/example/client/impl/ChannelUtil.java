@@ -38,6 +38,12 @@ import org.hyperledger.fabric.sdk.exception.TransactionException;
 public class ChannelUtil {
 
  
+  
+  public ChannelUtil() {
+//  Properties to set longer wiat time for the event hub
+  System.setProperty( "org.hyperledger.fabric.sdk.eventhub_connection.wait_time", "10000");
+}
+  
   /**
    * Re cosntructs sdk channel object
    * 
