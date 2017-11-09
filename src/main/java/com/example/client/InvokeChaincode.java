@@ -57,6 +57,7 @@ public class InvokeChaincode {
       ClassNotFoundException, NoSuchMethodException, InvocationTargetException {
     String channelName = "drugchan";
     String[] params = new String[] { "Alice", "Bob", "20" };
+    String peerName = "peer0.druginc.drug.com";
     if (args != null && args.length != 0) {
       params = args;
       sleepTime = Integer.parseInt(args[0]);
@@ -66,7 +67,7 @@ public class InvokeChaincode {
     String org = "druginc";
     String ops = "transfer";
     User user = new UserFileSystem("Admin", "druginc.drug.com");
-    TransactionEvent event = new InvokeChaincode().invoke(ops, params, org, channelName, chainCode, user);
+    TransactionEvent event = new InvokeChaincode().invoke(ops, params, org,peerName, channelName, chainCode, user);
     if (event != null) {
       // event.getTransactionID().
     }
@@ -82,11 +83,12 @@ public class InvokeChaincode {
 
       String ops = "transfer";
       String org = "druginc";
-      String channelName = "drug";
-      String chainCode = "javacc";
+      String channelName = "drugchan";
+      String chainCode = "bbb";
+      String peerName = "peer0.druginc.drug.com";
       User user = new UserFileSystem("Admin", "druginc.drug.com");
 
-      TransactionEvent event = new InvokeChaincode().invoke(ops, chaincodeFunctionParameters.getParameters(), org, channelName,
+      TransactionEvent event = new InvokeChaincode().invoke(ops, chaincodeFunctionParameters.getParameters(), org, peerName, channelName,
               chainCode, user);
       if (event != null) {
           // event.getTransactionID().
@@ -95,7 +97,7 @@ public class InvokeChaincode {
       return "DONE ->>>>>>>>>>>>>>>";
   }
 
-  public TransactionEvent invoke(String operation, String[] params, String org, String channelName, String chainCode,
+  public TransactionEvent invoke(String operation, String[] params, String org, String peerName, String channelName, String chainCode,
       User user) throws CryptoException, InvalidArgumentException, TransactionException, IOException,
       InterruptedException, ExecutionException, TimeoutException, ProposalException, IllegalAccessException,
       InstantiationException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException {
@@ -104,7 +106,7 @@ public class InvokeChaincode {
     HFClient client = HFClient.createNewInstance();
     client.setCryptoSuite(CryptoSuite.Factory.getCryptoSuite());
     client.setUserContext(user);
-    Channel channel = util.reconstructChannel(org, channelName, client);
+    Channel channel = util.reconstructChannel(org, channelName, peerName, client);
 
     ChaincodeID chaincodeID;
 
