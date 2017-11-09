@@ -37,13 +37,11 @@ import org.hyperledger.fabric.sdk.exception.TransactionException;
 
 public class ChannelUtil {
 
- 
-  
   public ChannelUtil() {
-//  Properties to set longer wiat time for the event hub
-  System.setProperty( "org.hyperledger.fabric.sdk.eventhub_connection.wait_time", "10000");
-}
-  
+    // Properties to set longer wiat time for the event hub
+    System.setProperty("org.hyperledger.fabric.sdk.eventhub_connection.wait_time", "10000");
+  }
+
   /**
    * Re cosntructs sdk channel object
    * 
@@ -75,20 +73,21 @@ public class ChannelUtil {
     return channel;
 
   }
-  
-  public Channel reconstructChannel(String org, String channelName, String peerName, HFClient client) throws IOException, InvalidArgumentException, TransactionException {
+
+  public Channel reconstructChannel(String org, String channelName, String peerName, HFClient client)
+      throws IOException, InvalidArgumentException, TransactionException {
     Properties props = new Properties();
-    FileInputStream fis = new FileInputStream( new File("./store/channels/" + channelName + "/" + channelName + ".prop"));
+    FileInputStream fis = new FileInputStream(
+        new File("./store/channels/" + channelName + "/" + channelName + ".prop"));
 
     props.load(fis);
     fis.close();
-    
+
     List<Peer> peers = new ArrayList<Peer>();
     List<Orderer> orderers = new ArrayList<Orderer>();
     List<EventHub> hubs = new ArrayList<EventHub>();
 
-
-    add(org, peerName, client, props, peers, orderers, hubs );
+    add(org, peerName, client, props, peers, orderers, hubs);
 
     return reconstructChannel(channelName, client, peers, orderers, hubs);
   }
@@ -111,15 +110,15 @@ public class ChannelUtil {
     return reconstructChannel(channelName, client, peers, orderers, hubs);
   }
 
-  protected void add(String org, String peerName, HFClient client, Properties props, List<Peer> peers, List<Orderer> orderers,
-      List<EventHub> hubs) throws InvalidArgumentException {
-    
+  protected void add(String org, String peerName, HFClient client, Properties props, List<Peer> peers,
+      List<Orderer> orderers, List<EventHub> hubs) throws InvalidArgumentException {
+
     String value;
     String key;
     String[] keySplit;
     Set<Entry<Object, Object>> set = props.entrySet();
 
-    for (Entry<Object, Object> entry : set) { 
+    for (Entry<Object, Object> entry : set) {
       key = entry.getKey().toString();
       keySplit = key.split("\\.");
       if (!org.equals(keySplit[1])) {
@@ -128,15 +127,15 @@ public class ChannelUtil {
       value = entry.getValue().toString();
       switch (keySplit[0]) {
       case "peer":
-        if (peerName == null || peerName.equals(split(value)[0]) ) {
+        if (peerName == null || peerName.equals(split(value)[0])) {
           peers.add(createPeer(client, value));
-        }  
+        }
         break;
       case "orderer":
         orderers.add(createOrderer(client, value));
         break;
       case "hub":
-        if (peerName == null || peerName.equals(split(value)[0]) ) {
+        if (peerName == null || peerName.equals(split(value)[0])) {
           hubs.add(createHub(client, value));
         }
         break;
@@ -176,13 +175,12 @@ public class ChannelUtil {
     props.setProperty("hostnameOverride", name);
     props.setProperty("sslProvider", "openSSL");
     props.setProperty("negotiationType", "TLS");
-    if("orderer".equals(type)) {
+    if ("orderer".equals(type)) {
       props.put("ordererWaitTimeMilliSecs", "10000");
     }
-    System.setProperty( "org.hyperledger.fabric.sdk.eventhub_connection.wait_time", "10000");
-      props.put("grpc.NettyChannelBuilderOption.keepAliveTime", new Object[] {5L, TimeUnit.MINUTES});
-      props.put("grpc.NettyChannelBuilderOption.keepAliveTimeout", new Object[] {8L, TimeUnit.SECONDS});
-      props.put("grpc.NettyChannelBuilderOption.keepAliveWithoutCalls", new Object[] {true});
+    props.put("grpc.NettyChannelBuilderOption.keepAliveTime", new Object[] { 5L, TimeUnit.MINUTES });
+    props.put("grpc.NettyChannelBuilderOption.keepAliveTimeout", new Object[] { 8L, TimeUnit.SECONDS });
+    props.put("grpc.NettyChannelBuilderOption.keepAliveWithoutCalls", new Object[] { true });
     return props;
   }
 
@@ -211,17 +209,16 @@ public class ChannelUtil {
     return new String[] { str.substring(0, index), str.substring(index + 1) };
   }
 
-  public Channel createNewChannel(String ordererPath, String pathToConfigTX, String channelName, String org, HFClient client)
-      throws IOException, InvalidArgumentException, TransactionException {
+  public Channel createNewChannel(String ordererPath, String pathToConfigTX, String channelName, String org,
+      HFClient client) throws IOException, InvalidArgumentException, TransactionException {
 
-    
     Orderer orderer = createOrderer(client, ordererPath);
 
     if (orderer == null) {
       throw new RuntimeException("Orderer not found in channel create property file");
     }
-    
-    storeNewChannel(channelName, ordererPath , org);
+
+    storeNewChannel(channelName, ordererPath, org);
 
     Channel channel = createNewChannel(pathToConfigTX, channelName, client, orderer, client.getUserContext());
     return channel;
@@ -232,21 +229,21 @@ public class ChannelUtil {
     if (!file.exists()) {
       file.mkdirs();
     }
-    
+
     File propFile = new File(file, channelName + ".prop");
     Properties props = new Properties();
-    if(propFile.exists()) {
+    if (propFile.exists()) {
       FileInputStream fis = new FileInputStream(propFile);
       props.load(fis);
       fis.close();
     }
-    
+
     props.setProperty("orderer." + org + ".0", ordererPath);
-    
+
     FileOutputStream out = new FileOutputStream(propFile);
     props.store(out, null);
     out.close();
-    
+
   }
 
   protected Channel createNewChannel(String pathToConfigTX, String channelName, HFClient client, Orderer orderer,
@@ -260,7 +257,7 @@ public class ChannelUtil {
 
   public void updateChannelProps(String channelName, String org, String peerPath, String eventHub) throws IOException {
     Properties props = new Properties();
-    File propFile = new File("./store/channels/" + channelName + "/" + channelName +  ".prop");
+    File propFile = new File("./store/channels/" + channelName + "/" + channelName + ".prop");
     FileInputStream fis = new FileInputStream(propFile);
 
     props.load(fis);
