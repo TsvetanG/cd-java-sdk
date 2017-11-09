@@ -16,7 +16,6 @@ package com.example.client.impl;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -51,7 +50,7 @@ public class ChannelUtil {
    */
   protected Channel reconstructChannel(String channelName, HFClient client, List<Peer> peers, List<Orderer> orderers,
       List<EventHub> hubs) throws InvalidArgumentException, TransactionException {
-
+ 
     Channel channel = client.newChannel(channelName);
 
     for (Orderer orderer : orderers) { // add remaining orderers if any.
@@ -70,6 +69,23 @@ public class ChannelUtil {
     return channel;
 
   }
+  
+  public Channel reconstructChannel(String org, String channelName, String peerName, HFClient client) throws IOException, InvalidArgumentException, TransactionException {
+    Properties props = new Properties();
+    FileInputStream fis = new FileInputStream( new File("./store/channels/" + channelName + "/" + channelName + ".prop"));
+
+    props.load(fis);
+    fis.close();
+    
+    List<Peer> peers = new ArrayList<Peer>();
+    List<Orderer> orderers = new ArrayList<Orderer>();
+    List<EventHub> hubs = new ArrayList<EventHub>();
+
+
+    add(org, peerName, client, props, peers, orderers, hubs );
+
+    return reconstructChannel(channelName, client, peers, orderers, hubs);
+  }
 
   public Channel reconstructChannel(String org, String channelName, HFClient client)
       throws IOException, InvalidArgumentException, TransactionException {
@@ -83,13 +99,21 @@ public class ChannelUtil {
     List<Peer> peers = new ArrayList<Peer>();
     List<Orderer> orderers = new ArrayList<Orderer>();
     List<EventHub> hubs = new ArrayList<EventHub>();
-    String key;
-    String value;
-    String[] keySplit;
 
+    add(org, null, client, props, peers, orderers, hubs);
+
+    return reconstructChannel(channelName, client, peers, orderers, hubs);
+  }
+
+  protected void add(String org, String peerName, HFClient client, Properties props, List<Peer> peers, List<Orderer> orderers,
+      List<EventHub> hubs) throws InvalidArgumentException {
+    
+    String value;
+    String key;
+    String[] keySplit;
     Set<Entry<Object, Object>> set = props.entrySet();
 
-    for (Entry<Object, Object> entry : set) {
+    for (Entry<Object, Object> entry : set) { 
       key = entry.getKey().toString();
       keySplit = key.split("\\.");
       if (!org.equals(keySplit[1])) {
@@ -98,21 +122,23 @@ public class ChannelUtil {
       value = entry.getValue().toString();
       switch (keySplit[0]) {
       case "peer":
-        peers.add(createPeer(client, value));
+        if (peerName == null || peerName.equals(split(value)[0]) ) {
+          peers.add(createPeer(client, value));
+        }  
         break;
       case "orderer":
         orderers.add(createOrderer(client, value));
         break;
       case "hub":
-        hubs.add(createHub(client, value));
+        if (peerName == null || peerName.equals(split(value)[0]) ) {
+          hubs.add(createHub(client, value));
+        }
         break;
 
       default:
         break;
       }
     }
-
-    return reconstructChannel(channelName, client, peers, orderers, hubs);
   }
 
   protected Properties getOrdererProps(String name) {

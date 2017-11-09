@@ -49,11 +49,13 @@ public class QueryChaincode {
   public static void main(String[] args) throws CryptoException, InvalidArgumentException, TransactionException,
       IOException, ProposalException, InterruptedException, ExecutionException, TimeoutException, IllegalAccessException, InstantiationException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException {
  
-    String channelName = "transfer";
-    String chainCode = "javacc";
+    String channelName = "drugchan";
+    String chainCode = "bbb";
+    String peerName = "peer0.druginc.drug.com";
     String[] params = new String[] { "Bob" }; 
+    
     User user = new UserFileSystem("Admin", "druginc.drug.com");
-    new QueryChaincode().query(params, "druginc", channelName, chainCode, user);
+    new QueryChaincode().query(params, "druginc", peerName, channelName, chainCode, user);
 
   }
 
@@ -64,17 +66,18 @@ public class QueryChaincode {
   {
       String channelName = "drugchan";
       String chainCode = "bbb";
+      String peerName = "peer0.druginc.drug.com";
       String[] params = new String[] { "Bob" };
       User user = new UserFileSystem("Admin", "druginc.drug.com");
       QueryResult queryResult = new QueryResult();
       
-      String result = query(params, "druginc", channelName, chainCode, user);
+      String result = query(params, "druginc", peerName, channelName, chainCode, user);
       queryResult.setResponse(result);
       System.out.println("executed query: result is " + queryResult.getResponse());
       return queryResult;
   } 
 
-  public String query(String[] params, String org, String channelName, String chainCode, User user)
+  public String query(String[] params, String org, String peerName, String channelName, String chainCode, User user)
   throws CryptoException, InvalidArgumentException, TransactionException, IOException, InterruptedException,
   ExecutionException, TimeoutException, ProposalException, IllegalAccessException, InstantiationException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException {
 
@@ -82,7 +85,7 @@ public class QueryChaincode {
     HFClient client = HFClient.createNewInstance();
     client.setCryptoSuite(CryptoSuite.Factory.getCryptoSuite());
     client.setUserContext(user);
-    Channel channel = util.reconstructChannel(org, channelName, client);
+    Channel channel = util.reconstructChannel(org, channelName, peerName, client);
 
     ChaincodeID chaincodeID;
 
