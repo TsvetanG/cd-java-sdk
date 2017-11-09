@@ -30,7 +30,7 @@ import org.hyperledger.fabric.sdk.ChannelConfiguration;
 import org.hyperledger.fabric.sdk.EventHub;
 import org.hyperledger.fabric.sdk.HFClient;
 import org.hyperledger.fabric.sdk.Orderer;
-import org.hyperledger.fabric.sdk.Peer;
+import org.hyperledger.fabric.sdk.Peer; 
 import org.hyperledger.fabric.sdk.User;
 import org.hyperledger.fabric.sdk.exception.InvalidArgumentException;
 import org.hyperledger.fabric.sdk.exception.TransactionException;
@@ -173,6 +173,7 @@ public class ChannelUtil {
     if("orderer".equals(type)) {
       props.put("ordererWaitTimeMilliSecs", "10000");
     }
+    System.setProperty( "org.hyperledger.fabric.sdk.eventhub_connection.wait_time", "10000");
       props.put("grpc.NettyChannelBuilderOption.keepAliveTime", new Object[] {5L, TimeUnit.MINUTES});
       props.put("grpc.NettyChannelBuilderOption.keepAliveTimeout", new Object[] {8L, TimeUnit.SECONDS});
       props.put("grpc.NettyChannelBuilderOption.keepAliveWithoutCalls", new Object[] {true});
