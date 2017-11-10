@@ -46,7 +46,10 @@ import com.example.client.impl.ChannelUtil;
 import com.example.client.impl.UserFileSystem;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+
 @RestController
+@CrossOrigin(origins = "*")
 public class InvokeChaincode {
 
   private static int sleepTime;
@@ -74,8 +77,10 @@ public class InvokeChaincode {
     System.out.println("DONE ->>>>>>>>>>>>>>>");
   }
 
-  @RequestMapping(value = "/chaincode/invoke", method = RequestMethod.POST)
-  public String invokeMethod(@RequestBody ChaincodeFunctionParameters chaincodeFunctionParameters)
+  @CrossOrigin
+  @RequestMapping(value = "/invokechaincode", method = RequestMethod.POST)
+  @ResponseBody
+  public String invokeMethod(@RequestBody String[] chaincodeParameters)
           throws CryptoException, InvalidArgumentException, TransactionException, IOException,
           InterruptedException, ExecutionException, TimeoutException, ProposalException, IllegalAccessException,
           InstantiationException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException
@@ -85,16 +90,18 @@ public class InvokeChaincode {
       String org = "druginc";
       String channelName = "drugchan";
       String chainCode = "bbb";
+      //String[] params = new String[] { "Bob", "Alice", "20" };
+      String[] params = chaincodeParameters;
       String peerName = "peer0.druginc.drug.com";
       User user = new UserFileSystem("Admin", "druginc.drug.com");
 
-      TransactionEvent event = new InvokeChaincode().invoke(ops, chaincodeFunctionParameters.getParameters(), org, peerName, channelName,
+      TransactionEvent event = new InvokeChaincode().invoke(ops, params, org, peerName, channelName,
               chainCode, user);
       if (event != null) {
           // event.getTransactionID().
       }
 
-      return "DONE ->>>>>>>>>>>>>>>";
+      return "Success!";
   }
 
   public TransactionEvent invoke(String operation, String[] params, String org, String peerName, String channelName, String chainCode,
@@ -161,4 +168,8 @@ public class InvokeChaincode {
     return channel.sendTransaction(successful).get(10000, TimeUnit.SECONDS);
   }
 
+    @ModelAttribute
+    public void setVaryResponseHeader(HttpServletResponse response) {
+        response.setHeader("Access-Control-Allow-Origin", "*");
+    }
 }
